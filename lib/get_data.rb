@@ -1,6 +1,6 @@
 class WebScraper
   def go
-  	driver = Selenium::WebDriver.for :firefox
+  	driver = Selenium::WebDriver.for :chrome
 
 	driver.get "http://www.homesteadpolice.com/Summary_Disclaimer.aspx"
 
