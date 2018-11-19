@@ -1,6 +1,6 @@
 require 'get_data.rb'
 
-desc "This task does nothing"
+desc "Fetches Data for Community Justice Project"
 task :webscraper do
     WebScraper.new.go
 end

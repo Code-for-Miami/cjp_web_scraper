@@ -39,7 +39,7 @@ class WebScraper
 	# Authenticate a session with your Service Account
 
 	# session = GoogleDrive::Session.from_service_account_key('public/temp.json')
-	session = GoogleDrive::Session.from_service_account_key(StringIO.new(Rails.application.secrets.google_let_try_this.to_json))
+	session = GoogleDrive::Session.from_service_account_key(StringIO.new(Rails.application.secrets.google_client_secrets.to_json))
 
 	# Get the spreadsheet by its title
 	spreadsheet = session.spreadsheet_by_title("CJP Test Spreadsheet")
