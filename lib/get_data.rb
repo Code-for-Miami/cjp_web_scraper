@@ -29,9 +29,8 @@ class WebScraper
   		type = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[3]")
   		details = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[4]")
   		location = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[5]")
-  		details = details.text.split('Charge')
-  		arrestee = details[0]
-  		charge = "Charge #{details[1]}"
+  		arrestee = parse_name(details.text)
+  		charge = parse_charge(details.text)
   		arrest = [date.text, type.text, arrestee, charge, location.text]
   		arrests.append(arrest)
 	end
@@ -55,4 +54,14 @@ class WebScraper
 
 	driver.quit()
   end
+
+  def parse_name(string)
+  	first_step = string.split('Arrestee: ')
+  	second_step = first_step[1].split('Charge')[0]
+  end
+
+  def parse_charge(string)
+  	string.split('Charge: ')[1]
+  end
+
 end
