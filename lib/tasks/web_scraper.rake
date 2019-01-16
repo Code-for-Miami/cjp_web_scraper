@@ -5,3 +5,4 @@ task :webscraper do
     WebScraper.new.go
 end
 
+	
