@@ -2,6 +2,8 @@ class WebScraper
 	def go
 		driver = Selenium::WebDriver.for :chrome
 
+		puts 'Getting Data from www.homesteadpolice.com'
+
 		driver.get "http://www.homesteadpolice.com/Summary_Disclaimer.aspx"
 
 		# click agree
@@ -29,27 +31,25 @@ class WebScraper
 			type = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[3]")
 			details = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[4]")
 			location = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[5]")
-			arrestee = parse_name(details.text)
-			charge = parse_charge(details.text)
-			arrest = [date.text, type.text, arrestee, charge, location.text]
-			arrests.append(arrest)
+			if details.text
+				arrestee = parse_name(details.text)
+				charge = parse_charge(details.text)
+				arrest = [date.text, type.text, arrestee, charge, location.text]
+				arrests.append(arrest)
+			end
 		end
 
-		puts 'Getting Data from www.homesteadpolice.com'
+		
+		puts 'Authenticating a session with your Google Service Account'
 
-		# Authenticate a session with your Service Account
-		puts 'Authenticate a session with your Service Account'
-
-		# session = GoogleDrive::Session.from_service_account_key('public/temp.json')
 		session = GoogleDrive::Session.from_service_account_key(StringIO.new(Rails.application.secrets.google_client_secrets.to_json))
 
-		# Get the spreadsheet by its url
 		puts 'Get the spreadsheet by its url'
 		spreadsheet_url = Rails.application.secrets.spreadsheet_url
 
 		spreadsheet = session.spreadsheet_by_url(spreadsheet_url)
 
-		puts "We found #{spreadsheet} spreadsheet"
+		puts "Found #{spreadsheet} spreadsheet"
 
 		worksheet_number = Rails.application.secrets.spreadsheet_worksheet_number
 
@@ -71,8 +71,12 @@ class WebScraper
 	end
 
 	def parse_name(string)
-		first_step = string.split('Arrestee: ')
-		second_step = first_step[1].split('Charge')[0]
+		if string
+			first_step = string.split('Arrestee: ')
+		end
+		if first_step[1] # Need this check because sometimes data is missing on Arrestee
+			second_step = first_step[1].split('Charge')[0]
+		end
 	end
 
 	def parse_charge(string)
