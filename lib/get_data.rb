@@ -56,9 +56,9 @@ class WebScraper
 
 		puts "Found #{spreadsheet.name} spreadsheet"
 
-		worksheet_number = Rails.application.secrets.spreadsheet_worksheet_number
+		worksheet_gid_number = Rails.application.secrets.worksheet_gid_number
 
-		worksheet = spreadsheet.worksheets[worksheet_number]
+		worksheet = spreadsheet.worksheet_by_gid(worksheet_gid_number)
 
 		existing_rows = []
 		worksheet.rows.each do |row|
