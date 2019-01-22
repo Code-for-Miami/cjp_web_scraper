@@ -1,3 +1,5 @@
+require 'time'
+
 class WebScraper
 	def go
 		driver = Selenium::WebDriver.for :chrome
@@ -32,9 +34,12 @@ class WebScraper
 			details = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[4]")
 			location = driver.find_element(:xpath => "//*[@id='mainContent_gvSummary']/tbody/tr[#{i+2}]/td[5]")
 			if details.text
-				arrestee = parse_name(details.text)
-				charge = parse_charge(details.text)
-				arrest = [date.text, type.text, arrestee, charge, location.text]
+				arrestee = parse_name(details.text).strip
+				charge = parse_charge(details.text).strip
+				date_text = date.text.strip
+				type_text = type.text.strip
+				location_text = location.text.strip
+				arrest = [date_text, type_text, arrestee, charge, location_text]
 				arrests.append(arrest)
 			end
 		end
@@ -55,12 +60,23 @@ class WebScraper
 
 		worksheet = spreadsheet.worksheets[worksheet_number]
 
+		existing_rows = []
+		worksheet.rows.each do |row|
+			formatted_arrest = ["#{row[0]}", "#{row[1]}","#{row[2]}", "#{row[3]}", "#{row[4]}"]
+			existing_rows.append(formatted_arrest)
+		end
+
 		puts 'Writing data to spreadsheet'
 
 		arrests.each do |arrest|
-			puts "#{arrest}"
-			worksheet.insert_rows(worksheet.num_rows + 1, [arrest])
+			if !existing_rows.include?(arrest)
+				puts arrest
+				worksheet.insert_rows(worksheet.num_rows + 1, [arrest])
+			else
+				puts "Row already exists"
+			end			
 		end
+
 		worksheet.save
 
 		puts 'Finished writing data to spreadsheet'
