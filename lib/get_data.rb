@@ -44,12 +44,12 @@ class WebScraper
 
 		session = GoogleDrive::Session.from_service_account_key(StringIO.new(Rails.application.secrets.google_client_secrets.to_json))
 
-		puts 'Get the spreadsheet by its url'
+		puts 'Getting the spreadsheet by its url'
 		spreadsheet_url = Rails.application.secrets.spreadsheet_url
 
 		spreadsheet = session.spreadsheet_by_url(spreadsheet_url)
 
-		puts "Found #{spreadsheet} spreadsheet"
+		puts "Found #{spreadsheet.name} spreadsheet"
 
 		worksheet_number = Rails.application.secrets.spreadsheet_worksheet_number
 
